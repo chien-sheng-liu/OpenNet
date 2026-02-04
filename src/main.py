@@ -49,7 +49,7 @@ def main() -> None:
     steps = args.steps
     while (abs(validation.rtp - target_rtp) > tol or validation.win_rate < min_win) and attempts < max_attempts:
         attempts += 1
-        # increase steps moderately for subsequent attempts
+        # Increase steps moderately for subsequent attempts to broaden search
         steps = int(steps * 1.5)
         cfg = SearchConfig(max_steps=steps, spins_per_eval=args.eval_spins, seed=args.seed + attempts)
         search = ReelSearch(cfg)

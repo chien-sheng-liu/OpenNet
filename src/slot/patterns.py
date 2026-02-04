@@ -27,31 +27,31 @@ def winning_patterns() -> List[Pattern]:
     The fifth pattern (full 3×3) pays 5× symbol multiplier (weight=5).
     """
     p: List[Pattern] = []
-    # 4.1: top-left 2x2
+    # 4.1: top-left 2x2 (rows 0-1, cols 0-1)
     p.append(Pattern(
         name="top_left_2x2",
         coords=[(0, 0), (0, 1), (1, 0), (1, 1)],
         weight=1,
     ))
-    # 4.2: top-right 2x2
+    # 4.2: top-right 2x2 (rows 0-1, cols 1-2)
     p.append(Pattern(
         name="top_right_2x2",
         coords=[(0, 1), (0, 2), (1, 1), (1, 2)],
         weight=1,
     ))
-    # 4.3: bottom-left 2x2
+    # 4.3: bottom-left 2x2 (rows 1-2, cols 0-1)
     p.append(Pattern(
         name="bottom_left_2x2",
         coords=[(1, 0), (1, 1), (2, 0), (2, 1)],
         weight=1,
     ))
-    # 4.4: bottom-right 2x2
+    # 4.4: bottom-right 2x2 (rows 1-2, cols 1-2)
     p.append(Pattern(
         name="bottom_right_2x2",
         coords=[(1, 1), (1, 2), (2, 1), (2, 2)],
         weight=1,
     ))
-    # 4.5: full 3x3
+    # 4.5: full 3x3 (all 9 cells)
     p.append(Pattern(
         name="full_3x3",
         coords=[(r, c) for r in range(3) for c in range(3)],

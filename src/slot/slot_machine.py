@@ -32,8 +32,9 @@ class SlotMachine:
 
     def spin_grid(self, stops: Tuple[int, int, int]) -> Grid:
         """Construct a 3×3 grid from the reels given stop indices per reel."""
+        # Each reel returns a column of 3 symbols (top→bottom) for a given stop.
         cols = [reel.window(stop) for reel, stop in zip(self.reels, stops)]
-        # Convert to 3x3 grid (rows of columns)
+        # Transpose columns into a row-major 3×3 grid for evaluation and UI.
         return [[cols[c][r] for c in range(3)] for r in range(3)]
 
     def payout(self, grid: Grid) -> float:
@@ -43,6 +44,7 @@ class SlotMachine:
             coords = p.coords
             first_r, first_c = coords[0]
             symbol = grid[first_r][first_c]
+            # A pattern wins only if all cells in its shape match the same symbol.
             if all(grid[r][c] == symbol for r, c in coords):
                 total += self.bet_amount * self.symbols.get(symbol).multiplier * p.weight
         return total

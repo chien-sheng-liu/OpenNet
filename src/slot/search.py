@@ -82,6 +82,7 @@ class ReelSearch:
         - strengthen a block: pick position and extend/run it 2–4 long
         - copy a short slice within/between reels to encourage repeated structure
         """
+        # Work on a mutable copy of each reel's symbol list
         rlist = [list(r.symbols) for r in reels]
         choice = self.rng.random()
         if choice < 0.25:
@@ -147,6 +148,7 @@ class ReelSearch:
 
         temperature = 1.0
         for step in range(self.cfg.max_steps):
+            # Propose a neighboring configuration by mutating current reels
             proposal = self._mutate(current_reels)
             res = self._evaluate(proposal)
             loss = self._loss(res)

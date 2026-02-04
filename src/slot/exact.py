@@ -37,6 +37,7 @@ class ExactEvaluator:
             for j in range(lengths[1]):
                 for k in range(lengths[2]):
                     stops: Tuple[int, int, int] = (i, j, k)
+                    # Build the grid produced by these stop indices
                     grid = self.machine.spin_grid(stops)
                     payout = self.machine.payout(grid)
                     total_return += payout
@@ -45,6 +46,7 @@ class ExactEvaluator:
 
         total_bet = total_combos * self.machine.bet_amount
         win_rate = wins / total_combos if total_combos > 0 else 0.0
+        # RTP is expected return per unit bet
         rtp = total_return / total_bet if total_bet > 0 else 0.0
         return ExactMetrics(
             spins=total_combos,
@@ -53,4 +55,3 @@ class ExactEvaluator:
             win_rate=win_rate,
             rtp=rtp,
         )
-

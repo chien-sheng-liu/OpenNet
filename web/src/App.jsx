@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
 
+// Simple labeled textarea with monospace font for JSON config
 function TextArea({ label, value, onChange, rows = 4 }) {
   return (
     <label style={{ display: 'block', marginBottom: 12 }}>
@@ -16,6 +17,7 @@ function TextArea({ label, value, onChange, rows = 4 }) {
   )
 }
 
+// Simple labeled number input
 function NumberInput({ label, value, onChange, min = 0 }) {
   return (
     <label style={{ display: 'block', marginBottom: 12 }}>
@@ -58,6 +60,7 @@ function App() {
     try { return JSON.parse(reelsJson) } catch { return null }
   }, [reelsJson])
 
+  // Manually run search with provided parameters (kept for advanced users)
   async function callSearch() {
     setBusy(true)
     setResult(null)
@@ -78,6 +81,7 @@ function App() {
     }
   }
 
+  // Spin the current reels and animate columns to the returned stops
   async function callSpin() {
     try {
       // start reel animation based on actual reels if available
@@ -125,6 +129,7 @@ function App() {
     }
   }
 
+  // Quick Monte Carlo simulation to get a rough RTP/WinRate snapshot
   async function callSimulate() {
     try {
       const res = await fetch(`${API_BASE}/simulate`, {

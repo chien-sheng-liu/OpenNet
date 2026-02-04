@@ -19,7 +19,7 @@ from slot.exact import ExactEvaluator
 
 app = FastAPI(title="Slot Game API", version="1.0.0")
 
-# Allow local dev frontends
+# Allow local dev frontends to call the API in the browser
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -107,6 +107,7 @@ def post_search(req: SearchRequest) -> SearchResponse:
     attempts = 0
     max_attempts = 8
     steps = req.steps
+    # Validate exactly and retry with larger searches until constraints met
     while True:
         machine = SlotMachine(cand.reels, bet_amount=1.0)
         exact = ExactEvaluator(machine)
@@ -196,7 +197,7 @@ def post_spin(req: SpinRequest) -> SpinResponse:
     """Perform a random spin on provided reels and return evaluation details."""
     reels = req.reels.to_reels()
     machine = SlotMachine(reels=reels, bet_amount=req.bet_amount)
-    # random spin via simulator's RNG for convenience
+    # Random spin via simulator's RNG for convenience
     sim = Simulator(machine)
     stops = tuple(sim.random.randrange(r.length) for r in reels)  # type: ignore
     grid = machine.spin_grid(stops)
