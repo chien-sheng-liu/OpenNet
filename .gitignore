@@ -74,3 +74,17 @@ reels_config.json
 .idea
 
 __pycache__
+
+# IDE
+.idea/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# (可選) venv
+.venv/
+venv/
+
