@@ -1,15 +1,18 @@
-# OS/macOS
+## OS artifacts
+# macOS
 .DS_Store
 .Spotlight-V100
 .Trashes
+# Windows
+Thumbs.db
 
-# IDE/Editor
+## IDE/Editor
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# Python
+## Python
 __pycache__/
 *.py[cod]
 *.pyo
@@ -39,8 +42,10 @@ wheels/
 .coverage.*
 coverage.xml
 htmlcov/
+coverage/
 
-# Node / Frontend
+## Node / Frontend
+node_modules/
 web/node_modules/
 web/dist/
 web/.vite/
@@ -50,14 +55,18 @@ web/pnpm-debug.log*
 web/.DS_Store
 .eslintcache
 web/coverage/
+web/.cache/
+.pnp.cjs
+.pnp.loader.mjs
+.pnp.data.json
 
-# Testing/CI
+## Testing/CI
 .tox/
 .hypothesis/
 .cache/
 .nyc_output/
 
-# Misc project files
+## Misc project files
 .python-version
 .nvmrc
 .node-version
@@ -87,4 +96,3 @@ __pycache__/
 # (可選) venv
 .venv/
 venv/
-
