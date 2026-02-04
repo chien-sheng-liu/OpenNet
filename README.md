@@ -7,10 +7,25 @@
 - pip (optional: virtualenv)
 - Node 18+ (for the frontend)
 
+**Conda Setup (recommended)**
+- Create and activate the environment:
+  - `conda env create -f environment.yml`
+  - `conda activate opennet-slot`
+- Or create manually and install via pip:
+  - `conda create -n opennet-slot python=3.9`
+  - `conda activate opennet-slot`
+  - `pip install -r requirements.txt`
+
+**Makefile Tasks**
+- `make setup` installs Python dependencies with pip.
+- `make setup-conda` creates/updates the Conda env (activate with `conda activate opennet-slot`).
+- `make run-api` runs the FastAPI server on port 8000.
+- `make run-web` runs the Vite dev server in `web/`.
+
 **Quickstart (CLI)**
-- From repo root, run search + validation:
+- From repo root, run search + exact validation:
   - `PYTHONPATH=src python -m src.main --steps 800 --eval-spins 50000 --spins 100000 --seed 42`
-  - Produces `reels_config.json` with reels and validation metrics.
+  - Produces `reels_config.json` with reels and exact validation metrics.
 - Alternatively from `src/`:
   - `python main.py --steps 800 --eval-spins 50000 --spins 100000 --seed 42`
 
@@ -21,8 +36,7 @@
 - `--seed` optional RNG seed for determinism [default 42]
 
 **API Server**
-- Install deps: `pip install fastapi uvicorn pydantic`
-- Start server: `PYTHONPATH=src uvicorn api.server:app --reload --port 8000`
+- Start server: `make run-api` (or `PYTHONPATH=src uvicorn api.server:app --reload --port 8000`)
 - Endpoints:
   - `GET /health`
   - `POST /search_auto` (default; used by the frontend) — adaptive search that returns reels meeting RTP ≥ 0.95 and Win Rate ≥ 0.55 with exact validation.
@@ -33,9 +47,9 @@
 **React Frontend**
 - `cd web`
 - Install: `npm install` (or `pnpm i`/`yarn`)
-- Run dev: `npm run dev`
+- Run dev: `npm run dev` (or `make run-web` from repo root)
 - Open http://localhost:5173 (defaults to API at http://localhost:8000). Override with `VITE_API_BASE`.
-- The UI uses `POST /search_auto` by default and shows a brief in-progress status while it searches.
+- Click “Auto Search” to get a configuration that passes exact validation (RTP ≥ 0.95, Win Rate ≥ 0.55). The UI shows a brief progress status while it searches.
 
 **Repository Layout**
 - `src/slot/symbols.py` — symbol definitions and multipliers

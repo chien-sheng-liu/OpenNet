@@ -28,10 +28,12 @@ This repo contains a 3×3 slot game used for the OpenNet Data Science homework. 
   - `simulator.py` — Monte Carlo simulation (RTP and win rate).
   - `search.py` — heuristic reel search targeting RTP/win‑rate.
 - `src/api/server.py` — FastAPI: search, spin, simulate.
+- `src/slot/exact.py` — exact RTP/win-rate evaluation by enumerating stops.
 - `src/main.py` — CLI wrapper for search + validation.
 - `web/` — React (Vite) frontend for inputs, spins, viz.
 - `DS-HomeWork.md` — authoritative rules.
 - `README.md` — quickstart for CLI, API, frontend.
+ - `Makefile` — setup and run shortcuts.
 
 ## FastAPI Contracts
 
@@ -92,6 +94,13 @@ This repo contains a 3×3 slot game used for the OpenNet Data Science homework. 
   - API: `PYTHONPATH=src uvicorn api.server:app --reload` then `GET /health`.
   - Frontend: `npm run dev` and verify search/spin/simulate flows.
 - Do not change payouts, weights, or pattern definitions unless explicitly instructed.
+
+## Developer Shortcuts
+
+- Use the `Makefile` for common tasks:
+  - `make setup` or `make setup-conda`
+  - `make run-api`
+  - `make run-web`
 
 ## Non‑Goals
 
