@@ -1,3 +1,9 @@
+"""Core slot machine logic.
+
+Builds the 3×3 grid from reels, evaluates payouts against winning patterns,
+and provides detailed match information for visualization.
+"""
+
 from dataclasses import dataclass
 from typing import List, Tuple, Dict, Any
 
@@ -6,16 +12,18 @@ from .reel import Reel
 from .symbols import SymbolSet
 
 
-Grid = List[List[int]]  # 3x3 of symbol keys
+Grid = List[List[int]]  # 3×3 of symbol keys
 
 
 @dataclass
 class SlotMachine:
+    """A 3-reel, 3×3 slot machine with fixed patterns and symbol set."""
     reels: Tuple[Reel, Reel, Reel]
     bet_amount: float = 1.0
     patterns: List[Pattern] = None
 
     def __post_init__(self) -> None:
+        """Initialize default patterns and symbol set, validate inputs."""
         if self.patterns is None:
             self.patterns = winning_patterns()
         if len(self.reels) != 3:
@@ -23,11 +31,13 @@ class SlotMachine:
         self.symbols = SymbolSet()
 
     def spin_grid(self, stops: Tuple[int, int, int]) -> Grid:
+        """Construct a 3×3 grid from the reels given stop indices per reel."""
         cols = [reel.window(stop) for reel, stop in zip(self.reels, stops)]
         # Convert to 3x3 grid (rows of columns)
         return [[cols[c][r] for c in range(3)] for r in range(3)]
 
     def payout(self, grid: Grid) -> float:
+        """Compute total payout for a grid across all winning patterns."""
         total = 0.0
         for p in self.patterns:
             coords = p.coords
@@ -38,7 +48,12 @@ class SlotMachine:
         return total
 
     def evaluate_patterns(self, grid: Grid) -> Dict[str, Any]:
-        """Return payout and detailed match info for visualization."""
+        """Return payout and per-pattern match details for visualization.
+
+        The result contains the total payout and a list of matches with
+        pattern name, coordinates, winning symbol, weight, multiplier,
+        and per-pattern payout contribution.
+        """
         matches: List[Dict[str, Any]] = []
         total = 0.0
         for p in self.patterns:

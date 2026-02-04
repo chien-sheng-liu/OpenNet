@@ -1,3 +1,9 @@
+"""Monte Carlo simulator for slot outcomes.
+
+Runs repeated spins to estimate RTP (return to player) and win rate for a
+given `SlotMachine` configuration. Deterministic when a seed is provided.
+"""
+
 import random
 from dataclasses import dataclass
 from typing import Tuple, Optional
@@ -7,6 +13,7 @@ from .slot_machine import SlotMachine
 
 @dataclass
 class SimulationResult:
+    """Aggregate metrics from a simulation run."""
     spins: int
     total_bet: float
     total_return: float
@@ -15,11 +22,15 @@ class SimulationResult:
 
 
 class Simulator:
+    """Simulate spins for a `SlotMachine` to estimate metrics."""
+
     def __init__(self, machine: SlotMachine, seed: Optional[int] = None) -> None:
+        """Create a simulator using an optional RNG seed for reproducibility."""
         self.machine = machine
         self.random = random.Random(seed)
 
     def run(self, spins: int = 100_000) -> SimulationResult:
+        """Run `spins` independent spins and return aggregate metrics."""
         reels = self.machine.reels
         wins = 0
         total_return = 0.0

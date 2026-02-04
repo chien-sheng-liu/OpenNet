@@ -26,8 +26,9 @@ function NumberInput({ label, value, onChange, min = 0 }) {
 }
 
 function App() {
-  const [steps, setSteps] = useState(200)
-  const [evalSpins, setEvalSpins] = useState(50000)
+  // Faster defaults that still converge well; server validates exactly
+  const [steps, setSteps] = useState(300)
+  const [evalSpins, setEvalSpins] = useState(15000)
   const [spins, setSpins] = useState(100000)
   const [seed, setSeed] = useState(1337)
   const [busy, setBusy] = useState(false)
@@ -41,6 +42,8 @@ function App() {
   const [animGrid, setAnimGrid] = useState(null)
   const [animTimer, setAnimTimer] = useState(null)
   const [simRes, setSimRes] = useState(null)
+  const [status, setStatus] = useState('')
+  const [statusTimer, setStatusTimer] = useState(null)
 
   const reelsValid = useMemo(() => {
     try {
@@ -142,15 +145,34 @@ function App() {
       <h1>3×3 Slot Game</h1>
       <section style={{ marginTop: 24, padding: 12, border: '1px solid #ddd', borderRadius: 8 }}>
         <h2>Search Reels</h2>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <NumberInput label="Steps" value={steps} onChange={setSteps} min={1} />
-          <NumberInput label="Eval Spins" value={evalSpins} onChange={setEvalSpins} min={100} />
-          <NumberInput label="Validation Spins" value={spins} onChange={setSpins} min={100} />
-          <NumberInput label="Seed" value={seed} onChange={setSeed} />
-        </div>
-        <button onClick={callSearch} disabled={busy}>
-          {busy ? 'Searching…' : 'Run Search'}
+        <button onClick={async () => {
+          setBusy(true); setResult(null);
+          // simple progressing status
+          let dots = 0
+          setStatus('Searching')
+          const t = setInterval(() => {
+            dots = (dots + 1) % 4
+            setStatus('Searching' + '.'.repeat(dots))
+          }, 400)
+          setStatusTimer(t)
+          try {
+            const res = await fetch(`${API_BASE}/search_auto`, { method: 'POST' })
+            if (!res.ok) throw new Error('Search failed')
+            const data = await res.json()
+            setResult(data)
+            setReelsJson(JSON.stringify(data.reels, null, 2))
+            setStatus('Done')
+          } catch (e) { setStatus(''); alert(e.message) } finally {
+            setBusy(false); if (statusTimer) clearInterval(statusTimer); setStatusTimer(null)
+          }
+        }} disabled={busy}>
+          {busy ? 'Searching…' : 'Auto Search'}
         </button>
+        <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+          Auto mode finds reels that pass exact validation (RTP ≥ 0.95, Win Rate ≥ 0.55).
+        </div>
+        {status && <div style={{ marginTop: 6, fontSize: 12, color: '#333' }}>{status}</div>}
+        {/* Presets removed per request; defaults above are chosen to converge reliably. */}
         {result && (
           <div style={{ marginTop: 12 }}>
             <div>RTP: {result.validation?.rtp}</div>

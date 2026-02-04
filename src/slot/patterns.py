@@ -1,3 +1,10 @@
+"""Winning patterns for the 3×3 slot grid.
+
+Provides the five allowed patterns: four 2×2 corners (weight=1) and the
+full 3×3 (weight=5). Each pattern is defined by a list of (row, col)
+coordinates with 0-based indices.
+"""
+
 from dataclasses import dataclass
 from typing import List, Tuple
 
@@ -7,16 +14,17 @@ Coord = Tuple[int, int]  # (row, col) with 0-based indices
 
 @dataclass(frozen=True)
 class Pattern:
+    """A named pattern with its covered coordinates and payout weight."""
     name: str
     coords: List[Coord]
     weight: int
 
 
 def winning_patterns() -> List[Pattern]:
-    """Returns the five patterns as per DS-HomeWork.md.
+    """Return the five patterns as per DS-HomeWork.md.
 
-    First four patterns pay 1x symbol multiplier (weight=1).
-    Fifth pattern pays 5x symbol multiplier (weight=5).
+    First four patterns pay 1× symbol multiplier (weight=1).
+    The fifth pattern (full 3×3) pays 5× symbol multiplier (weight=5).
     """
     p: List[Pattern] = []
     # 4.1: top-left 2x2
@@ -50,4 +58,3 @@ def winning_patterns() -> List[Pattern]:
         weight=5,
     ))
     return p
-

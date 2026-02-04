@@ -1,41 +1,61 @@
 **Overview**
-- Implements a 3x3 slot game with 5 symbols and 5 winning patterns per DS-HomeWork.md.
-- Provides a simulator and a heuristic search to find reel configurations that target RTP=0.95 and win rate ≥ 0.55.
+- 3×3 slot game per `DS-HomeWork.md` with 5 symbols and 5 winning patterns.
+- Simulator and heuristic search target RTP=0.95 and win rate ≥ 0.55.
 
-**Layout**
-- `src/slot/symbols.py`: Symbol definitions and multipliers.
-- `src/slot/patterns.py`: Winning patterns and weights.
-- `src/slot/reel.py`: Reel representation and windowing.
-- `src/slot/slot_machine.py`: Core game logic and payout evaluation.
-- `src/slot/simulator.py`: Monte Carlo simulation engine.
-- `src/slot/search.py`: Heuristic reel configuration search.
-- `src/main.py`: CLI entry point.
+**Prerequisites**
+- Python 3.9
+- pip (optional: virtualenv)
+- Node 18+ (for the frontend)
 
-**Usage**
-- From the repository root, run search and validate:
-  - `PYTHONPATH=src python -m src.main --steps 200 --eval-spins 50000 --spins 100000 --seed 1337`
-  - Outputs `reels_config.json` with the reels and validation metrics.
+**Quickstart (CLI)**
+- From repo root, run search + validation:
+  - `PYTHONPATH=src python -m src.main --steps 800 --eval-spins 50000 --spins 100000 --seed 42`
+  - Produces `reels_config.json` with reels and validation metrics.
+- Alternatively from `src/`:
+  - `python main.py --steps 800 --eval-spins 50000 --spins 100000 --seed 42`
 
-- Or run from inside `src/` directly:
-  - `python main.py --steps 200 --eval-spins 50000 --spins 100000 --seed 1337`
+**CLI Options**
+- `--steps` number of search steps (mutation iterations) [default 800]
+- `--eval-spins` spins per step to estimate quality [default 50000]
+- `--spins` validation spins for the best candidate [default 100000]
+- `--seed` optional RNG seed for determinism [default 42]
 
-**API Server (Backend)**
+**API Server**
 - Install deps: `pip install fastapi uvicorn pydantic`
-- Run server from repo root: `PYTHONPATH=src uvicorn api.server:app --reload --port 8000`
+- Start server: `PYTHONPATH=src uvicorn api.server:app --reload --port 8000`
 - Endpoints:
   - `GET /health`
-  - `POST /search` body: `{steps, eval_spins, spins, seed}`
-  - `POST /spin` body: `{reels: {reel_1, reel_2, reel_3}, bet_amount}`
-  - `POST /simulate` body: `{reels: {...}, spins, seed}`
+  - `POST /search_auto` (default; used by the frontend) — adaptive search that returns reels meeting RTP ≥ 0.95 and Win Rate ≥ 0.55 with exact validation.
+  - `POST /search` body: `{ steps:int, eval_spins:int, spins:int, seed?:int }` (manual parameters)
+  - `POST /spin` body: `{ reels:{reel_1:int[],reel_2:int[],reel_3:int[]}, bet_amount:number }`
+  - `POST /simulate` body: `{ reels:{...}, spins:int, seed?:int }`
 
 **React Frontend**
-- cd `web`
-- Install deps: `npm install` (or `pnpm i`/`yarn`)
-- Start dev server: `npm run dev`
-- Open the app (default http://localhost:5173). It targets `http://localhost:8000` by default; set `VITE_API_BASE` env to override.
+- `cd web`
+- Install: `npm install` (or `pnpm i`/`yarn`)
+- Run dev: `npm run dev`
+- Open http://localhost:5173 (defaults to API at http://localhost:8000). Override with `VITE_API_BASE`.
+- The UI uses `POST /search_auto` by default and shows a brief in-progress status while it searches.
+
+**Repository Layout**
+- `src/slot/symbols.py` — symbol definitions and multipliers
+- `src/slot/patterns.py` — winning patterns and weights
+- `src/slot/reel.py` — reel representation and windowing
+- `src/slot/slot_machine.py` — grid construction and payout evaluation
+- `src/slot/simulator.py` — Monte Carlo simulation engine
+- `src/slot/search.py` — heuristic reel configuration search
+- `src/main.py` — CLI entry point
+- `src/api/server.py` — FastAPI server (search/spin/simulate)
+- `web/` — Vite/React frontend
+
+**Development & Testing**
+- Smoke tests after engine changes:
+  - CLI: `PYTHONPATH=src python -m src.main --steps 10 --eval-spins 1000 --spins 5000`
+  - API: `PYTHONPATH=src uvicorn api.server:app --reload` then `GET /health`
+  - Frontend: `npm run dev` and verify search/spin/simulate
+- Keep Python 3.9 compatibility; avoid newer typing syntax.
 
 **Notes**
-- RTP is measured as expected payout per unit bet via Monte Carlo simulation.
-- Win rate is the fraction of spins with any winning pattern.
-- Reels are modeled as circular lists; each spin samples a stop index per reel and uses three consecutive symbols for the column.
-# OpenNet
+- RTP: expected payout per unit bet via Monte Carlo simulation.
+- Win rate: fraction of spins with ≥1 winning pattern.
+- Reels are circular; each spin draws a stop per reel and uses three consecutive symbols per column.
